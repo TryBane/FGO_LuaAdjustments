@@ -202,7 +202,7 @@ clickCommandCards = function()
 			click(COMMAND_CARD_CLICK_ARRAY[cardSlot])
 			clickCount = clickCount + 1
 	
-			if clickCount == 4 then
+			if clickCount == 5 then
 				return
 			end
 		end
