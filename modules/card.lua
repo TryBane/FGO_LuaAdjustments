@@ -5,36 +5,39 @@ local _autoskill
 local _battle
 
 -- consts
+local APP_WIDTH = getAppUsableScreenSize():getX()
+local APP_HEIGHT =getAppUsableScreenSize():getY()
+
 local CARD_AFFINITY_REGION_ARRAY = {
 	-- see docs/card_affinity_regions.png
-	Region( 295,650,250,200),
-	Region( 810,650,250,200),
-	Region(1321,650,250,200),
-	Region(1834,650,250,200),
-	Region(2348,650,250,200)
+	Region( APP_WIDTH*.12,APP_HEIGHT*.45,APP_WIDTH*.098,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.32,APP_HEIGHT*.45,APP_WIDTH*.098,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.52,APP_HEIGHT*.45,APP_WIDTH*.098,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.72,APP_HEIGHT*.45,APP_WIDTH*.098,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.92,APP_HEIGHT*.45,APP_WIDTH*.098,APP_HEIGHT*.14)
 }
 
 local CARD_TYPE_REGION_ARRAY = {
 	-- see docs/card_type_regions.png
-	Region( 200,1060,200,200),
-	Region( 730,1060,200,200),
-	Region(1240,1060,200,200),
-	Region(1750,1060,200,200),
-	Region(2180, 960,350,350)
+	Region( APP_WIDTH*0,APP_HEIGHT*.73,APP_WIDTH*.2,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.2,APP_HEIGHT*.73,APP_WIDTH*.2,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.4,APP_HEIGHT*.73,APP_WIDTH*.2,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.6,APP_HEIGHT*.73,APP_WIDTH*.2,APP_HEIGHT*.14),
+	Region( APP_WIDTH*.8,APP_HEIGHT*.73,APP_WIDTH*.2,APP_HEIGHT*.14)
 }
 
 local COMMAND_CARD_CLICK_ARRAY = {
-	Location( 300,1000),
-	Location( 750,1000),
-	Location(1300,1000),
-	Location(1800,1000),
-	Location(2350,1000),
+	Location( APP_WIDTH*.12,APP_HEIGHT*.65),
+	Location( APP_WIDTH*.29,APP_HEIGHT*.65),
+	Location( APP_WIDTH*.51,APP_HEIGHT*.65),
+	Location( APP_WIDTH*.7,APP_HEIGHT*.65),
+	Location( APP_WIDTH*.92,APP_HEIGHT*.65),
 }
 
 local NP_CARD_CLICK_ARRAY = {
-	Location(1000,220),
-	Location(1300,400),
-	Location(1740,400)
+	Location(APP_WIDTH*.32,APP_HEIGHT*.28),
+	Location(APP_WIDTH*.5,APP_HEIGHT*.28),
+	Location(APP_WIDTH*.68,APP_HEIGHT*.28)
 }
 
 -- see docs/card_formula.jpg
@@ -199,7 +202,7 @@ clickCommandCards = function()
 			click(COMMAND_CARD_CLICK_ARRAY[cardSlot])
 			clickCount = clickCount + 1
 	
-			if clickCount == 3 then
+			if clickCount == 4 then
 				return
 			end
 		end
