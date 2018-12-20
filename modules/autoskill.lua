@@ -3,27 +3,32 @@ local _battle
 local _card
 
 -- consts
-local SKILL_OK_CLICK = Location(1680,850)
-local MASTER_SKILL_OPEN_CLICK = Location(2380,640)
-local ORDER_CHANGE_OK_CLICK = Location(1280,1260)
+local APP_WIDTH = getAppUsableScreenSize():getX()
+local APP_HEIGHT =getAppUsableScreenSize():getY()
 
-local SKILL_1_CLICK = Location( 140,1160)
-local SKILL_2_CLICK = Location( 340,1160)
-local SKILL_3_CLICK = Location( 540,1160)
-local SKILL_4_CLICK = Location( 770,1160)
-local SKILL_5_CLICK = Location( 970,1160)
-local SKILL_6_CLICK = Location(1140,1160)
-local SKILL_7_CLICK = Location(1400,1160)
-local SKILL_8_CLICK = Location(1600,1160)
-local SKILL_9_CLICK = Location(1800,1160)
+local BATTLE_REGION = Region(APP_WIDTH*.86,APP_HEIGHT*.14,APP_WIDTH*.4,APP_HEIGHT*.42)
 
-local MASTER_SKILL_1_CLICK = Location(1820,620)
-local MASTER_SKILL_2_CLICK = Location(2000,620)
-local MASTER_SKILL_3_CLICK = Location(2160,620)
+local SKILL_OK_CLICK = Location(APP_WIDTH*.66,APP_HEIGHT*.6)
+local MASTER_SKILL_OPEN_CLICK = Location(APP_WIDTH*.93,APP_HEIGHT*.44)
+local ORDER_CHANGE_OK_CLICK = Location(APP_WIDTH*.5,APP_HEIGHT*.875)
 
-local SERVANT_1_CLICK = Location(700,880)
-local SERVANT_2_CLICK = Location(1280,880)
-local SERVANT_3_CLICK = Location(1940,880)
+local SKILL_1_CLICK = Location( APP_WIDTH*.05,APP_HEIGHT*.8	)
+local SKILL_2_CLICK = Location( APP_WIDTH*.125,APP_HEIGHT*.8)
+local SKILL_3_CLICK = Location( APP_WIDTH*.2,APP_HEIGHT*.8)
+local SKILL_4_CLICK = Location( APP_WIDTH*.3,APP_HEIGHT*.8)
+local SKILL_5_CLICK = Location( APP_WIDTH*.375,APP_HEIGHT*.8)
+local SKILL_6_CLICK = Location( APP_WIDTH*.45,APP_HEIGHT*.8)
+local SKILL_7_CLICK = Location( APP_WIDTH*.55,APP_HEIGHT*.8)
+local SKILL_8_CLICK = Location( APP_WIDTH*.625,APP_HEIGHT*.8)
+local SKILL_9_CLICK = Location( APP_WIDTH*.7,APP_HEIGHT*.8)
+
+local MASTER_SKILL_1_CLICK = Location(APP_WIDTH*.71,APP_HEIGHT*.43)
+local MASTER_SKILL_2_CLICK = Location(APP_WIDTH*.781,APP_HEIGHT*.43)
+local MASTER_SKILL_3_CLICK = Location(APP_WIDTH*.843,APP_HEIGHT*.43)
+
+local SERVANT_1_CLICK = Location(APP_WIDTH*.27,APP_HEIGHT*.61)
+local SERVANT_2_CLICK = Location(APP_WIDTH*.5,APP_HEIGHT*.61)
+local SERVANT_3_CLICK = Location(APP_WIDTH*.75,APP_HEIGHT*.61)
 
 local SKILL_CLICK_ARRAY = {
 	[  1] = SKILL_1_CLICK,
@@ -44,9 +49,9 @@ local SKILL_CLICK_ARRAY = {
 }
 
 -- Order Change (front)
-local STARTING_MEMBER_1_CLICK = Location( 280,700)
-local STARTING_MEMBER_2_CLICK = Location( 680,700)
-local STARTING_MEMBER_3_CLICK = Location(1080,700)
+local STARTING_MEMBER_1_CLICK = Location( APP_WIDTH*.11,APP_HEIGHT*.49)
+local STARTING_MEMBER_2_CLICK = Location( APP_WIDTH*.265,APP_HEIGHT*.49)
+local STARTING_MEMBER_3_CLICK = Location( APP_WIDTH*.42,APP_HEIGHT*.49)
 local STARTING_MEMBER_CLICK_ARRAY = {
 	[-47] = STARTING_MEMBER_1_CLICK,
 	[-46] = STARTING_MEMBER_2_CLICK,
@@ -54,9 +59,9 @@ local STARTING_MEMBER_CLICK_ARRAY = {
 }
 
 -- Order Change (back)
-local SUB_MEMBER_1_CLICK = Location(1480,700)
-local SUB_MEMBER_2_CLICK = Location(1880,700)
-local SUB_MEMBER_3_CLICK = Location(2280,700)
+local SUB_MEMBER_1_CLICK = Location(APP_WIDTH*.58,APP_HEIGHT*.49)
+local SUB_MEMBER_2_CLICK = Location(APP_WIDTH*.73,APP_HEIGHT*.49)
+local SUB_MEMBER_3_CLICK = Location(APP_WIDTH*.9,APP_HEIGHT*.49)
 local SUB_MEMBER_CLICK_ARRAY = {
 	[-47] = SUB_MEMBER_1_CLICK,
 	[-46] = SUB_MEMBER_2_CLICK,
@@ -148,8 +153,15 @@ executeSkill = function ()
 		local isFirstSkill = 1
 		if currentSkill ~= '0' and currentSkill ~= '#' then
 			for command in string.gmatch(currentSkill, ".") do
-				decodeSkill(command, isFirstSkill)
-				isFirstSkill = 0
+				while not BATTLE_REGION:exists(GeneralImagePath .. "battle.png" ) do end
+					decodeSkill(command, isFirstSkill)
+					limit = 0
+					--[[while BATTLE_REGION:exists(GeneralImagePath .. "battle.png" ) and limit < 5 do
+					 limit = limit + 1
+					end]]
+					wait(.2)
+					isFirstSkill = 0
+				end
 			end
 		end
 		
@@ -177,7 +189,7 @@ decodeSkill = function(str, isFirstSkill)
 	if isFirstSkill == 0 and not _battle.hasClickedAttack() and index >= -44 and _isOrderChanging == 0 then
 		-- Wait for regular servant skill animation executed last time.
 		-- Do not make it shorter, at least 2.9s. Napoleon's skill animation is ridiculously long.
-		wait(3.3)
+		--wait(3.3)
 	end
 
 	--[[In ascii, char(4, 5, 6) command for servant NP456 = decimal(52, 53, 54) respectively.
@@ -225,7 +237,6 @@ decodeSkill = function(str, isFirstSkill)
 		wait(0.3)
 		click(ORDER_CHANGE_OK_CLICK)
 		_isOrderChanging = 0
-		wait(5)
 	else
 		-- cast skills, NPs, or select target.
 		click(SKILL_CLICK_ARRAY[index])

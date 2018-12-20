@@ -12,19 +12,29 @@ local autoskill = require("autoskill")
 
 --Main loop, pattern detection regions.
 --Click pos are hard-coded into code, unlikely to change in the future.
-MenuRegion = Region(2100,1200,1000,1000)
-ResultRegion = Region(100,300,700,200)
-BondRegion = Region(2000,820,120,120)
-QuestrewardRegion = Region(1630,140,370,250)
-FriendrequestRegion = Region(660, 120, 140, 160)
-StaminaRegion = Region(600,200,300,300)
+local APP_WIDTH = getAppUsableScreenSize():getX()
+local APP_HEIGHT =getAppUsableScreenSize():getY()
 
-StoneClick = (Location(1270,340))
-AppleClick = (Location(1270,640))
+AcceptClick = Location(APP_WIDTH*.65,APP_HEIGHT*.75)
 
-StartQuestClick = Location(2400,1350)
-StartQuestWithoutItemClick = Location(1652,1304) -- see docs/start_quest_without_item_click.png
-QuestResultNextClick = Location(2200, 1350) -- see docs/quest_result_next_click.png
+MenuRegion = Region(APP_WIDTH*.85,APP_HEIGHT*.85,APP_WIDTH*.15,APP_HEIGHT*.15)
+ResultRegion = Region(APP_WIDTH*.04,APP_HEIGHT*.2,APP_WIDTH*.28,APP_HEIGHT*.14)
+BondRegion = Region(APP_WIDTH*.7,APP_HEIGHT*.5,APP_WIDTH*.15,APP_HEIGHT*.15)
+QuestrewardRegion = Region(APP_WIDTH*.64,APP_HEIGHT*.098,APP_WIDTH*.145,APP_HEIGHT*.174)
+FriendrequestRegion = Region(APP_WIDTH*.25, APP_HEIGHT*.084, APP_WIDTH*.055, APP_HEIGHT*.12)
+StaminaRegion = Region(APP_WIDTH*.23,APP_HEIGHT*.135,APP_WIDTH*.12,APP_HEIGHT*.2)
+ItemDroppedRegion = Region(APP_WIDTH*.07,APP_HEIGHT*.08,APP_WIDTH*.22,APP_HEIGHT*.08)
+
+StoneClick = (Location(APP_WIDTH*.5,APP_HEIGHT*.24))
+AppleClick = (Location(APP_WIDTH*.5,APP_HEIGHT*.44))
+SilverClick = (Location(APP_WIDTH*.5,APP_HEIGHT*.64))
+BronzeClick = (Location(APP_WIDTH*.5,APP_HEIGHT*.8))
+
+StartQuestClick = Location(APP_WIDTH*.9375,APP_HEIGHT*.9375)
+StartQuestWithoutItemClick = Location(APP_WIDTH*.645,APP_HEIGHT*.9) -- see docs/start_quest_without_item_click.png
+QuestResultNextClick = Location(APP_WIDTH*.86, APP_HEIGHT*.9375) -- see docs/quest_result_next_click.png
+
+isFirstTurn = true
 
 --[[For future use:
 	NpbarRegion = Region(280,1330,1620,50)
@@ -53,7 +63,7 @@ function menu()
 	turnCounter = {0, 0, 0, 0, 0}
 
 	--Click uppermost quest.
-	click(Location(1900,400))
+	click(Location(APP_WIDTH*.74,APP_HEIGHT*.28))
 	wait(1.5)
 
 	--Auto refill.
@@ -70,18 +80,38 @@ function menu()
 end
 
 function RefillStamina()
-	if Refill_or_Not == 1 and StoneUsed < How_Many then
-		if Use_Stone == 1 then
+	if Refill_or_Not == 1 and StoneUsed < Repetitions then
+		if Use == "Stone" then
 			click(StoneClick)
-			toast("Auto Refilling Stamina")
+			--toast("Auto Refilling Stamina")
 			wait(1.5)
-			click(Location(1650,1120))
+			click(AcceptClick)
 			StoneUsed = StoneUsed + 1
-		else
+		elseif Use == "All Apples" then
+			click(BronzeClick)
+			click(SilverClick)
 			click(AppleClick)
-			toast("Auto Refilling Stamina")
+			--toast("Auto Refilling Stamina")
 			wait(1.5)
-			click(Location(1650,1120))
+			click(AcceptClick)
+			StoneUsed = StoneUsed + 1
+		elseif Use == "Gold" then
+			click(AppleClick)
+			--toast("Auto Refilling Stamina")
+			wait(1.5)
+			click(AcceptClick)
+			StoneUsed = StoneUsed + 1
+		elseif Use == "Silver" then
+			click(SilverClick)
+			--toast("Auto Refilling Stamina")
+			wait(1.5)
+			click(AcceptClick)
+			StoneUsed = StoneUsed + 1
+		elseif Use == "Bronze" then
+			click(BronzeClick)
+			--toast("Auto Refilling Stamina")
+			wait(1.5)
+			click(AcceptClick)
 			StoneUsed = StoneUsed + 1
 		end
 		wait(3)
@@ -105,32 +135,12 @@ function startQuest()
 end
 
 function result()
-	--Bond exp screen.
-	wait(2)
-	click(QuestResultNextClick)
+	
+	continueClick(QuestResultNextClick,35)
 
-	--Bond level up screen.
-	if BondRegion:exists(GeneralImagePath .. "bond.png") then
-		wait(1)
-		click(QuestResultNextClick)
-	end
-
-	--Master exp screen.
-	wait(2)
-	click(QuestResultNextClick)
-
-	--Obtained item screen.
-	wait(1.5)
-	click(QuestResultNextClick)
-
-	--Extra event item screen.
-	if isEvent == 1 then
-		wait(1.5)
-		click(QuestResultNextClick)
-	end
+	wait(3)
 
 	--Friend request screen. Non-friend support was selected this battle.  Ofc it's defaulted not sending request.
-	wait(1.5)
 	if FriendrequestRegion:exists(GeneralImagePath .. "friendrequest.png") ~= nil then
 		click(Location(600,1200))
 	end
@@ -145,22 +155,25 @@ end
 
 --User option PSA dialogue. Also choosble list of perdefined skill.
 function PSADialogue()
-	if PSADialogueShown ~= 0 then
-		return
-	end
 	dialogInit()
 	--Auto Refill dialogue content generation.
 	if Refill_or_Not == 1 then
-		if Use_Stone == 1 then
+		if Use == "Stone" then
 			RefillType = "stones"
-		else
-			RefillType = "apples"
+		elseif Use == "All Apples"
+			RefillType = "all apples"
+		elseif Use == "Gold"
+			RefillType = "gold apples"
+		elseif Use == "Silver"
+			RefillType = "silver apples"
+		else Use == "Bronze"
+			RefillType = "bronze apples"
 		end
 		addTextView("Auto Refill Enabled:")
 		newRow()
 		addTextView("You are going to use")
 		newRow()
-		addTextView(How_Many .. " " .. RefillType .. ", ")
+		addTextView(Repetitions .. " " .. RefillType .. ", ")
 		newRow()
 		addTextView("remember to check those values everytime you execute the script!")
 		addSeparator()
@@ -193,7 +206,6 @@ function PSADialogue()
 
 	--Show the generated dialogue.
 	dialogShow("CAUTION")
-	PSADialogueShown = 1
 
 	--Put user selection into list for later exception handling.
 	if Enable_Autoskill_List == 1 then
@@ -203,30 +215,31 @@ end
 
 function init()
 	--Set only ONCE for every separated script run.
-	PSADialogueShown = 0
+	setImmersiveMode(true)
+	Settings:setCompareDimension(true,1280)
+	Settings:setScriptDimension(true,APP_WIDTH)
+
+	StoneUsed = 0
 	PSADialogue()
 
 	autoskill.init(battle, card)
 	battle.init(autoskill, card)
 	card.init(autoskill, battle)
-	
-	setImmersiveMode(true)
-	Settings:setCompareDimension(true,1280)
-	Settings:setScriptDimension(true,2560)
-
-	StoneUsed = 0
 end
 
 init()
 while(1) do
 	if MenuRegion:exists(GeneralImagePath .. "menu.png", 0) then
-		toast("Will only select servant/danger enemy as noble phantasm target, unless specified using Skill Command. Please check github for further detail.")
+		--toast("Will only select servant/danger enemy as noble phantasm target, unless specified using Skill Command. Please check github for further detail.")
 		menu()
 	end
 	if battle.isIdle() then
 		battle.performBattle()
 	end
 	if ResultRegion:exists(GeneralImagePath .. "result.png", 0) then
+		result()
+	end
+	if BondRegion:exists(GeneralImagePath .. "bond.png", 0) then
 		result()
 	end
 end

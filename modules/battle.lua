@@ -4,21 +4,24 @@ local _autoskill
 local _card
 
 -- consts
-local BATTLE_REGION = Region(2200,200,1000,600)
-local ATTACK_CLICK = Location(2300,1200)
-local SKIP_DEATH_ANIMATION_CLICK = Location(1700, 100) -- see docs/skip_death_animation_click.png
+local APP_WIDTH = getAppUsableScreenSize():getX()
+local APP_HEIGHT =getAppUsableScreenSize():getY()
+
+local BATTLE_REGION = Region(APP_WIDTH*.86,APP_HEIGHT*.14,APP_WIDTH*.4,APP_HEIGHT*.42)
+local ATTACK_CLICK = Location(APP_WIDTH*.9,APP_HEIGHT*.83)
+local SKIP_DEATH_ANIMATION_CLICK = Location(APP_WIDTH*.66, APP_HEIGHT*.07) -- see docs/skip_death_animation_click.png
 
 -- see docs/target_regions.png
 local TARGET_REGION_ARRAY = {
-	Region(  0,0,485,220),
-	Region(485,0,482,220),
-	Region(967,0,476,220)
+	Region( APP_WIDTH*0,APP_HEIGHT*0,APP_WIDTH*.19,APP_HEIGHT*.15),
+	Region( APP_WIDTH*.19,APP_HEIGHT*0,APP_WIDTH*.19,APP_HEIGHT*.15),
+	Region( APP_WIDTH*.38,APP_HEIGHT*0,APP_WIDTH*.185,APP_HEIGHT*.15)
 }
 
 local TARGET_CLICK_ARRAY = {
-	Location(  90,80),
-	Location( 570,80),
-	Location(1050,80)
+	Location( APP_WIDTH*.035,APP_HEIGHT*.055),
+	Location( APP_WIDTH*.22,APP_HEIGHT*.055),
+	Location( APP_WIDTH*.41,APP_HEIGHT*.055)
 }
 
 -- state vars
